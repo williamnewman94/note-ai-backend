@@ -1,6 +1,7 @@
 import { CompactNoteJSON, NoteJSON } from "../../types/Midi.ts";
+import parallelNRequests from "../parallelNRequests.ts";
 import downsample from "./downsample.ts";
-import { openai } from "./openAI.ts";
+import { promptModel } from "./providers/openAI.ts";
 
 function notesToString(notes: CompactNoteJSON[]): string {
     return notes.map(note => JSON.stringify(note)).join(", ");
@@ -8,9 +9,8 @@ function notesToString(notes: CompactNoteJSON[]): string {
 
 type Key = "C major" | "C minor" | "G major" | "G minor" | "D major" | "D minor" | "A major" | "A minor" | "E major" | "E minor" | "B major" | "B minor" | "F# major" | "F# minor" | "C# major" | "C# minor"
 
-function getPrompt(notes: NoteJSON[], key: Key): string {
-    // const compactNotes = downsample(notes)
-    const compactNotes = notes
+function getPromptText(notes: NoteJSON[], key: Key): string {
+    const compactNotes = downsample(notes)
     return `Continue the following sequence of notes: ${notesToString(compactNotes)} in the key of ${key}`;
 }
 
@@ -24,8 +24,6 @@ export interface NoteJSON {
     ticks: number;
     // Duration in MIDI ticks
     durationTicks: number;
-    // Duration in seconds
-    durationSeconds: number;
 }
 `
 
@@ -49,18 +47,16 @@ const NOTE_SEQUENCE_FORMAT = `
 
 const RESPONSE_FORMAT = `
     {
-        "continuations": [
-            [
+        "continuation": [
                 note1,
                 note2,
                 note3,
                 ...
-            ],
         ]
     }
 `
 
-const N_DIFFERENT_CONTINUATIONS = 5;
+const NUM_DIFFERENT_CONTINUATIONS = 5;
 
 const SYSTEM_PROMPT = `You are assisting a music producer in composing a song.
 Here are some guidelines:
@@ -77,7 +73,7 @@ Here are some guidelines:
 
 6. Make sure the outputted notes belong to the same key as the key specified in the user prompt.
 
-7. Generate ${N_DIFFERENT_CONTINUATIONS} different continuations and return them in the following format: ${RESPONSE_FORMAT}.
+7. Return the continuation in the following format: ${RESPONSE_FORMAT}.
 `;
 
 const MODEL = "gpt-4o-mini";
@@ -86,22 +82,11 @@ const MODEL = "gpt-4o-mini";
 export default async function promptContinueTrack(
     tracks: NoteJSON[],
     key: Key
-): Promise<string | null> {
-    const prompt = getPrompt(tracks, key);
+): Promise<string[]> {
+    const promptText = getPromptText(tracks, key);
 
+    const continuations = await parallelNRequests(() => promptModel(promptText, SYSTEM_PROMPT, MODEL), NUM_DIFFERENT_CONTINUATIONS);
 
-    const completion = await openai.chat.completions.create({
-        model: MODEL,
-        messages: [
-            { role: "system", content: SYSTEM_PROMPT },
-            { role: "user", content: prompt },
-        ],
-        response_format: { type: "json_object" },
-        temperature: 1,
-        max_tokens: 1500,
-    });
-
-    const response = completion.choices[0].message.content ?? null;
-    return response;
+    return continuations.filter(continuation => continuation !== null);
 }
 
