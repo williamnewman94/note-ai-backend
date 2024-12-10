@@ -21,10 +21,8 @@ router.post("/api/continue_track", async (ctx) => {
   const sequenceOptions = await continueTrack();
   const end = performance.now();
   console.log(`Continue track endpoint took ${end - start}ms`);
-  ctx.response.body = {
-    sequenceOptions,
-    executionTime: end - start
-  };
+  ctx.response.body = sequenceOptions;
+
 });
 
 router.get("/api/sign_s3", async (ctx) => {
