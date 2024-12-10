@@ -17,6 +17,7 @@
     "jsr:@std/path@1": "1.0.8",
     "npm:@aws-sdk/client-s3@^3.705.0": "3.705.0_@aws-sdk+client-sts@3.699.0__@aws-sdk+client-sso-oidc@3.699.0___@aws-sdk+client-sts@3.699.0_@aws-sdk+client-sso-oidc@3.699.0__@aws-sdk+client-sts@3.699.0___@aws-sdk+client-sso-oidc@3.699.0____@aws-sdk+client-sts@3.699.0__@aws-sdk+client-sts@3.699.0___@aws-sdk+client-sso-oidc@3.699.0____@aws-sdk+client-sts@3.699.0_____@aws-sdk+client-sso-oidc@3.699.0___@aws-sdk+client-sso-oidc@3.699.0",
     "npm:@aws-sdk/s3-request-presigner@^3.705.0": "3.705.0",
+    "npm:@tonejs/midi@^2.0.28": "2.0.28",
     "npm:@types/node@*": "22.5.4",
     "npm:midi-file@^1.2.4": "1.2.4",
     "npm:midi-writer-js@^3.1.1": "3.1.1",
@@ -2773,6 +2774,13 @@
     "@tonaljs/pitch@5.0.2": {
       "integrity": "sha512-mxaXJPPe+LIJdjzpZEl8I8Wx3dEvlzkBbsr2Ltwc2dTAdnErAZ5R0TxVq2egF27lMvQN2QPQPWI9iDPPdVUmrg=="
     },
+    "@tonejs/midi@2.0.28": {
+      "integrity": "sha512-RII6YpInPsOZ5t3Si/20QKpNqB1lZ2OCFJSOzJxz38YdY/3zqDr3uaml4JuCWkdixuPqP1/TBnXzhQ39csyoVg==",
+      "dependencies": [
+        "array-flatten",
+        "midi-file"
+      ]
+    },
     "@types/node-fetch@2.6.12": {
       "integrity": "sha512-8nneRWKCg3rMtF69nLQJnOYUcbafYeFSjqkw3jCRLsqkWFlHaoQrr5mXmofFGOx3DKn7UfmBMyov8ySvLRVldA==",
       "dependencies": [
@@ -2803,6 +2811,9 @@
       "dependencies": [
         "humanize-ms"
       ]
+    },
+    "array-flatten@3.0.0": {
+      "integrity": "sha512-zPMVc3ZYlGLNk4mpK1NzP2wg0ml9t7fUgDsayR5Y5rSzxQilzR9FGu/EH2jQOcKSAeAfWeylyW8juy3OkWRvNA=="
     },
     "asynckit@0.4.0": {
       "integrity": "sha512-Oei9OH4tRh0YqU3GxhX79dM/mwVgvbZJaSNaRk+bshkj0S5cfHcgYakreBjrHwatXKbz+IoIdYLxrKim2MjW0Q=="
@@ -2969,6 +2980,7 @@
       "jsr:@std/assert@1",
       "npm:@aws-sdk/client-s3@^3.705.0",
       "npm:@aws-sdk/s3-request-presigner@^3.705.0",
+      "npm:@tonejs/midi@^2.0.28",
       "npm:midi-file@^1.2.4",
       "npm:midi-writer-js@^3.1.1",
       "npm:openai@^4.75.0"

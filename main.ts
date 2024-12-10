@@ -1,6 +1,8 @@
 import { Application, Router } from "@oak/oak";
 import generateBlocks from "./routes/blocks.ts";
-import continueSequence from "./routes/continueSequence.ts";
+import continueTrack from "./routes/continueTrack.ts";
+import { signS3 } from "./utils/AWS/signS3.ts";
+import MIDI_FILE_NAME from "./utils/midiFile.ts";
 
 
 const router = new Router();
@@ -14,10 +16,21 @@ router.post("/api/blocks", async (ctx) => {
   ctx.response.body = blocks;
 });
 
-router.post("/api/continue_sequence", async (ctx) => {
-  const sequenceOptions = await continueSequence();
-  console.log(sequenceOptions);
-  ctx.response.body = sequenceOptions;
+router.post("/api/continue_track", async (ctx) => {
+  const start = performance.now();
+  const sequenceOptions = await continueTrack();
+  const end = performance.now();
+  console.log(`Continue track endpoint took ${end - start}ms`);
+  ctx.response.body = {
+    sequenceOptions,
+    executionTime: end - start
+  };
+});
+
+router.get("/api/sign_s3", async (ctx) => {
+  const signedUrl = await signS3(MIDI_FILE_NAME);
+  ctx.response.body = { signedUrl };
+
 });
 
 const app = new Application();
@@ -34,5 +47,6 @@ app.use(async (ctx, next) => {
 
 app.use(router.routes());
 app.use(router.allowedMethods());
+
 
 app.listen({ port: 8001 });
