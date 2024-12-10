@@ -1,4 +1,4 @@
-import { openai } from "./openAI.ts";
+import { openai } from "./providers/openAI.ts";
 import { Style } from "../parameters/getRandomStyle.ts";
 import { NoteValue } from "../parameters/getRandomNoteValue.ts";
 import { CHORD_EXAMPLE } from "./promptChords.ts";
