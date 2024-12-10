@@ -14,6 +14,7 @@ import { getRandomNoteValue } from "../utils/parameters/getRandomNoteValue.ts";
 import promptRhythm from "../utils/OpenAI/promptRhythm.ts";
 import parseRhythm from "../utils/OpenAI/parseRhythm.ts";
 import parseChords from "../utils/OpenAI/parseChords.ts";
+import MIDI_FILE_NAME from "../utils/midiFile.ts";
 
 const BARS = 4;
 
@@ -51,8 +52,8 @@ async function _generateBlocks() {
 
     const midi = createMidiTrack(chordEvents);
     const writer = new MidiWriter.Writer(midi);
-    await uploadS3(writer.buildFile(), "midi.mid");
-    const signedUrl = await signS3("midi.mid");
+    await uploadS3(writer.buildFile(), MIDI_FILE_NAME);
+    const signedUrl = await signS3(MIDI_FILE_NAME);
 
     return { key, mode, startingNote, style, chords, signedUrl };
 }

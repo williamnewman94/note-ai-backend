@@ -1,19 +1,17 @@
-import { parseMidi, type MidiData, type MidiEvent } from "midi-file";
-import { downloadS3 } from "../AWS/downloadS3.ts";
+import Midi, { type MidiJSON } from "@tonejs/midi";
+import { signS3 } from "../AWS/signS3.ts";
+import { NoteJSON } from "../../types/Midi.ts";
 
-export type Track = MidiEvent[]
 
-
-// load midi into memory
-
-export default async function loadMidiTracks(fileName: string): Promise<Track[]> {
+export default async function loadMidiTracks(fileName: string): Promise<NoteJSON[]> {
     const midi = await loadMidi(fileName);
-    return midi.tracks;
+    // TODO: Handle multiple tracks
+    return midi.tracks[0].notes;
 }
 
-async function loadMidi(fileName: string): Promise<MidiData> {
-    const midiFile = await downloadS3(fileName);
-    const midiFileBuffer = await midiFile.arrayBuffer();
-    const midi: MidiData = parseMidi(new Uint8Array(midiFileBuffer));
-    return midi
+async function loadMidi(fileName: string): Promise<MidiJSON> {
+    // Is there a simpler way to leverage the .fromUrl() method?
+    const signedMidiUrl = await signS3(fileName);
+    const midi = await Midi.Midi.fromUrl(signedMidiUrl);
+    return midi.toJSON();
 }
