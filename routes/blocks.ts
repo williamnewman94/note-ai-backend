@@ -6,14 +6,14 @@ import getRandomStartingNote, {
     SongNote,
 } from "../utils/parameters/getRandomStartingNote.ts";
 import getRandomStyle, { Style } from "../utils/parameters/getRandomStyle.ts";
-import promptChords from "../utils/OpenAI/promptChords.ts";
+import promptChords from "../utils/AI/promptChords.ts";
 import { uploadS3 } from "../utils/AWS/uploadS3.ts";
 import createMidiTrack from "../utils/Midi/loadMidi.ts";
 import { signS3 } from "../utils/AWS/signS3.ts";
 import { getRandomNoteValue } from "../utils/parameters/getRandomNoteValue.ts";
-import promptRhythm from "../utils/OpenAI/promptRhythm.ts";
-import parseRhythm from "../utils/OpenAI/parseRhythm.ts";
-import parseChords from "../utils/OpenAI/parseChords.ts";
+import promptRhythm from "../utils/AI/promptRhythm.ts";
+import parseRhythm from "../utils/AI/parseRhythm.ts";
+import parseChords from "../utils/AI/parseChords.ts";
 import MIDI_FILE_NAME from "../utils/midiFile.ts";
 
 const BARS = 4;

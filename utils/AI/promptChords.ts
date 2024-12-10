@@ -1,4 +1,4 @@
-import { openai } from "./openAI.ts";
+import { openai } from "./providers/openAI.ts";
 
 function getPrompt(
     key: string,
