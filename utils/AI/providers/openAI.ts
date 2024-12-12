@@ -8,7 +8,7 @@ export async function promptModel(prompt: string, systemPrompt: string, model: s
     const response = await openai.chat.completions.create({
         model: model,
         messages: [{ role: "system", content: systemPrompt }, { role: "user", content: prompt }],
-        response_format: { type: "json_object" },
+        response_format: { type: "text" },
         temperature: 1,
         max_tokens: 1500,
     });
