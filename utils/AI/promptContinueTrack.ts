@@ -115,7 +115,7 @@ Here are some guidelines:
 const MODEL = "gpt-4o-mini";
 
 
-function mapArrayToJSON(array: (string | number)[][]): NoteJSON[] {
+function mapArrayToJSON(array: (string | number)[][]): CompactNoteJSON[] {
     return array.map(note => ({
         name: note[0] as string,
         velocity: note[1] as number,
@@ -124,7 +124,7 @@ function mapArrayToJSON(array: (string | number)[][]): NoteJSON[] {
     }));
 }
 
-// Convert back to NoteJSON in string format as the caller expects so I can test it
+// Convert back to NoteJSON in string format as the caller expects so I can test this before committing.
 function fudgeArray(response: string): string {
     const json = JSON.parse(response)
     const array = json.continuation
