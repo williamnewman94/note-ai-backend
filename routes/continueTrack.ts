@@ -10,7 +10,7 @@ export default async function continueTrack(): Promise<NoteJSON[][]> {
 
     // prompt openai for continuation options
     const start2 = performance.now();
-    const continuationOptions = await promptContinueTrack(midiTracks, "C major");
+    const continuationOptions = await promptContinueTrack(midiTracks, "A major");
     const end2 = performance.now();
     console.log(`Prompt continue track took ${end2 - start2}ms`);
 

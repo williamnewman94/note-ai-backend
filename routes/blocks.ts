@@ -9,7 +9,7 @@ import getRandomStyle, { Style } from "../utils/parameters/getRandomStyle.ts";
 import promptChords from "../utils/AI/promptChords.ts";
 import { uploadS3 } from "../utils/AWS/uploadS3.ts";
 import createMidiTrack from "../utils/Midi/loadMidi.ts";
-import { signS3 } from "../utils/AWS/signS3.ts";
+import { signS3Get } from "../utils/AWS/signS3.ts";
 import { getRandomNoteValue } from "../utils/parameters/getRandomNoteValue.ts";
 import promptRhythm from "../utils/AI/promptRhythm.ts";
 import parseRhythm from "../utils/AI/parseRhythm.ts";
@@ -53,7 +53,7 @@ async function _generateBlocks() {
     const midi = createMidiTrack(chordEvents);
     const writer = new MidiWriter.Writer(midi);
     await uploadS3(writer.buildFile(), MIDI_FILE_NAME);
-    const signedUrl = await signS3(MIDI_FILE_NAME);
+    const signedUrl = await signS3Get(MIDI_FILE_NAME);
 
     return { key, mode, startingNote, style, chords, signedUrl };
 }
