@@ -110,9 +110,11 @@ Here are some guidelines:
 6. Make sure the outputted notes belong to the same key as the key specified in the user prompt.
 
 7. Return the continuation in the following format: ${RESPONSE_FORMAT} where each note is defined as ${NOTE_FORMAT_ARRAY}.
+
+8. Do not include any other text in your response aside from the JSON.
 `;
 
-const MODEL = "gpt-4o-mini";
+const MODEL = "gpt-4o";
 
 
 function mapArrayToJSON(array: (string | number)[][]): CompactNoteJSON[] {
@@ -126,10 +128,16 @@ function mapArrayToJSON(array: (string | number)[][]): CompactNoteJSON[] {
 
 // Convert back to NoteJSON in string format as the caller expects so I can test this before committing.
 function fudgeArray(response: string): string {
-    const json = JSON.parse(response)
-    const array = json.continuation
-    const noteJSON = mapArrayToJSON(array)
-    return `\`\`\`json{"continuation": [${notesToString(noteJSON)}]}\`\`\``
+    try {
+        const cleaned = response.replace(/```json/g, "").replace(/```/g, "");
+        const json = JSON.parse(cleaned);
+        const array = json.continuation
+        const noteJSON = mapArrayToJSON(array)
+        return `\`\`\`json{"continuation": [${notesToString(noteJSON)}]}\`\`\``
+    } catch (e) {
+        console.log(e, response);
+        throw e;
+    }
 }
 
 export default async function promptContinueTrack(
