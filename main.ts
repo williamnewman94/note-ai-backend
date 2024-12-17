@@ -1,8 +1,10 @@
 import { Application, Router } from "@oak/oak";
 import generateBlocks from "./routes/blocks.ts";
 import continueTrack from "./routes/continueTrack.ts";
-import { signS3 } from "./utils/AWS/signS3.ts";
+import { signS3Get } from "./utils/AWS/signS3.ts";
 import MIDI_FILE_NAME from "./utils/midiFile.ts";
+import { NoteJSON } from "./types/Midi.ts";
+import saveMidi from "./utils/Midi/saveMidi.ts";
 
 
 const router = new Router();
@@ -26,9 +28,19 @@ router.post("/api/continue_track", async (ctx) => {
 });
 
 router.get("/api/sign_s3", async (ctx) => {
-  const signedUrl = await signS3(MIDI_FILE_NAME);
+  const signedUrl = await signS3Get(MIDI_FILE_NAME);
   ctx.response.body = { signedUrl };
 
+});
+
+router.post("/api/save_track", async (ctx) => {
+  const notesBody: { notes: NoteJSON[] } = await ctx.request.body.json();
+  if (!notesBody.notes) {
+    ctx.response.body = { error: "No notes provided" };
+    return;
+  }
+  const isMidiSaved = await saveMidi(notesBody.notes);
+  ctx.response.body = isMidiSaved;
 });
 
 const app = new Application();
