@@ -4,7 +4,7 @@ import downsample from "./downsample.ts";
 import { promptModel } from "./providers/openAI.ts";
 
 function notesToString(notes: CompactNoteJSON[]): string {
-    return notes.map(note => JSON.stringify(note)).join(", ");
+  return notes.map((note) => JSON.stringify(note)).join(", ");
 }
 
 //       [
@@ -13,20 +13,27 @@ function notesToString(notes: CompactNoteJSON[]): string {
 //       ...
 //       ] -> string
 function notesToStringArray(notes: (string | number)[][]): string {
-    return `[${notes.map(note => `[${note.join(", ")}]`).join(", ")}]`
+  return `[${notes.map((note) => `[${note.join(", ")}]`).join(", ")}]`;
 }
 
-type Key = "C major" | "C minor" | "G major" | "G minor" | "D major" | "D minor" | "A major" | "A minor" | "E major" | "E minor" | "B major" | "B minor" | "F# major" | "F# minor" | "C# major" | "C# minor"
-
 function getPromptText(notes: NoteJSON[], key: Key): string {
-    const compactNotes = downsample(notes)
-    return `Continue the following sequence of notes: ${notesToString(compactNotes)} in the key of ${key}`;
+  const compactNotes = downsample(notes);
+  return `Continue the following sequence of notes: ${notesToString(
+    compactNotes
+  )} in the key of ${key}`;
 }
 
 function getPromptTextArray(notes: NoteJSON[], key: Key): string {
-    const compactNotes = downsample(notes)
-    const arrayNotes = compactNotes.map(note => [note.name, note.velocity, note.ticks, note.durationTicks])
-    return `Continue the following sequence of notes: ${notesToStringArray(arrayNotes)} in the key of ${key}`;
+  const compactNotes = downsample(notes);
+  const arrayNotes = compactNotes.map((note) => [
+    note.name,
+    note.velocity,
+    note.ticks,
+    note.durationTicks,
+  ]);
+  return `Continue the following sequence of notes: ${notesToStringArray(
+    arrayNotes
+  )} in the key of ${key}`;
 }
 
 const NOTE_FORMAT = `
@@ -40,7 +47,7 @@ export interface NoteJSON {
     // Duration in MIDI ticks
     durationTicks: number;
 }
-`
+`;
 
 const NOTE_FORMAT_ARRAY = `
 [
@@ -53,7 +60,7 @@ const NOTE_FORMAT_ARRAY = `
     // Duration in MIDI ticks
     number
 ]
-`
+`;
 
 const NOTE_SEQUENCE_FORMAT = `
     [
@@ -71,7 +78,7 @@ const NOTE_SEQUENCE_FORMAT = `
       },
       ...
     ]
-`
+`;
 
 const NOTE_SEQUENCE_FORMAT_ARRAY = `
     [
@@ -79,7 +86,7 @@ const NOTE_SEQUENCE_FORMAT_ARRAY = `
       ["E4", 0.75, 240, 240],
       ...
     ]
-`
+`;
 
 const RESPONSE_FORMAT = `
     {
@@ -90,7 +97,7 @@ const RESPONSE_FORMAT = `
                 ...
         ]
     }
-`
+`;
 
 const NUM_DIFFERENT_CONTINUATIONS = 5;
 
@@ -116,40 +123,41 @@ Here are some guidelines:
 
 const MODEL = "gpt-4o";
 
-
 function mapArrayToJSON(array: (string | number)[][]): CompactNoteJSON[] {
-    return array.map(note => ({
-        name: note[0] as string,
-        velocity: note[1] as number,
-        ticks: note[2] as number,
-        durationTicks: note[3] as number
-    }));
+  return array.map((note) => ({
+    name: note[0] as string,
+    velocity: note[1] as number,
+    ticks: note[2] as number,
+    durationTicks: note[3] as number,
+  }));
 }
 
 // Convert back to NoteJSON in string format as the caller expects so I can test this before committing.
 function fudgeArray(response: string): string {
-    try {
-        const cleaned = response.replace(/```json/g, "").replace(/```/g, "");
-        const json = JSON.parse(cleaned);
-        const array = json.continuation
-        const noteJSON = mapArrayToJSON(array)
-        return `\`\`\`json{"continuation": [${notesToString(noteJSON)}]}\`\`\``
-    } catch (e) {
-        console.log(e, response);
-        throw e;
-    }
+  try {
+    const cleaned = response.replace(/```json/g, "").replace(/```/g, "");
+    const json = JSON.parse(cleaned);
+    const array = json.continuation;
+    const noteJSON = mapArrayToJSON(array);
+    return `\`\`\`json{"continuation": [${notesToString(noteJSON)}]}\`\`\``;
+  } catch (e) {
+    console.log(e, response);
+    throw e;
+  }
 }
 
 export default async function promptContinueTrack(
-    tracks: NoteJSON[],
-    key: Key
+  tracks: NoteJSON[],
+  key: Key
 ): Promise<string[]> {
-    const promptText = getPromptTextArray(tracks, key);
+  const promptText = getPromptTextArray(tracks, key);
 
-    const continuations = await parallelNRequests(() => promptModel(promptText, SYSTEM_PROMPT, MODEL), NUM_DIFFERENT_CONTINUATIONS);
+  const continuations = await parallelNRequests(
+    () => promptModel(promptText, SYSTEM_PROMPT, MODEL),
+    NUM_DIFFERENT_CONTINUATIONS
+  );
 
-    
-
-    return continuations.filter(continuation => continuation !== null).map(fudgeArray);
+  return continuations
+    .filter((continuation) => continuation !== null)
+    .map(fudgeArray);
 }
-
