@@ -1,3 +1,4 @@
+import Key from "../../types/Key.ts";
 import { CompactNoteJSON, NoteJSON } from "../../types/Midi.ts";
 import parallelNRequests from "../parallelNRequests.ts";
 import downsample from "./downsample.ts";
@@ -16,13 +17,6 @@ function notesToStringArray(notes: (string | number)[][]): string {
   return `[${notes.map((note) => `[${note.join(", ")}]`).join(", ")}]`;
 }
 
-function getPromptText(notes: NoteJSON[], key: Key): string {
-  const compactNotes = downsample(notes);
-  return `Continue the following sequence of notes: ${notesToString(
-    compactNotes
-  )} in the key of ${key}`;
-}
-
 function getPromptTextArray(notes: NoteJSON[], key: Key): string {
   const compactNotes = downsample(notes);
   const arrayNotes = compactNotes.map((note) => [
@@ -36,19 +30,6 @@ function getPromptTextArray(notes: NoteJSON[], key: Key): string {
   )} in the key of ${key}`;
 }
 
-const NOTE_FORMAT = `
-export interface NoteJSON {
-    // Note name (e.g. "C4", "F#3")
-    name: string;
-    // Normalized velocity (0-1)
-    velocity: number;
-    // Start time in MIDI ticks
-    ticks: number;
-    // Duration in MIDI ticks
-    durationTicks: number;
-}
-`;
-
 const NOTE_FORMAT_ARRAY = `
 [
     // Note name (e.g. "C4", "F#3")
@@ -60,24 +41,6 @@ const NOTE_FORMAT_ARRAY = `
     // Duration in MIDI ticks
     number
 ]
-`;
-
-const NOTE_SEQUENCE_FORMAT = `
-    [
-      {
-        "name": "C4",
-        "velocity": 0.75,
-        "ticks": 0,
-        "durationTicks": 240
-      },
-      {
-        "name": "E4", 
-        "velocity": 0.75,
-        "ticks": 240,
-        "durationTicks": 240
-      },
-      ...
-    ]
 `;
 
 const NOTE_SEQUENCE_FORMAT_ARRAY = `
