@@ -1,3 +1,4 @@
+import Key from "../../types/Key.ts";
 import { CompactNoteJSON, NoteJSON } from "../../types/Midi.ts";
 import parallelNRequests from "../parallelNRequests.ts";
 import downsample from "./downsample.ts";
