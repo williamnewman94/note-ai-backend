@@ -1,0 +1,19 @@
+type Key =
+  | "C major"
+  | "C minor"
+  | "G major"
+  | "G minor"
+  | "D major"
+  | "D minor"
+  | "A major"
+  | "A minor"
+  | "E major"
+  | "E minor"
+  | "B major"
+  | "B minor"
+  | "F# major"
+  | "F# minor"
+  | "C# major"
+  | "C# minor";
+
+export default Key;
