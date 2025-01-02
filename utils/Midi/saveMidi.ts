@@ -12,18 +12,6 @@ function createMidiFile(notes: NoteJSON[]): Blob {
 
   // Add notes to the track
   notes.forEach((note) => {
-    // Validate note data before adding
-    if (
-      !note.name ||
-      typeof note.velocity !== "number" ||
-      typeof note.durationTicks !== "number" ||
-      typeof note.ticks !== "number"
-    ) {
-      console.warn("Invalid note data:", note);
-      return; // Skip invalid notes
-    }
-    console.log("ADDING NOTE", note);
-
     track.addNote({
       name: note.name,
       velocity: note.velocity,
