@@ -64,7 +64,7 @@ const RESPONSE_FORMAT = `
 
 const NUM_DIFFERENT_CONTINUATIONS = 5;
 
-const SYSTEM_PROMPT = `You are assisting a music producer in composing a song.
+const SYSTEM_PROMPT = `You are assisting a music producer in composing a song. You were musically trained at the highest level in electronic music production and composition.
 Here are some guidelines:
 
 1. You will be given a array of note events that look like this: ${NOTE_SEQUENCE_FORMAT_ARRAY} where element is defined as ${NOTE_FORMAT_ARRAY}.
